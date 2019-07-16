@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import com.example.disco.model.Artist;
 import com.example.disco.service.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,27 +14,27 @@ public class ArtistController {
     private ArtistService service;
 
     @GetMapping("/")
-    public List<Artist> listOfArtists() {
+    public List<Artist> listofArtists() {
         return service.listAll();
     }
 
-    @GetMapping("/{id}")
-    public Artist getArtist(@PathVariable("id") int id) {
-        return service.findById(id);
-    }
-
     @PostMapping("/")
-    public void addArtist(@Valid @RequestBody Artist art) {
+    public String addArtist(@Valid @RequestBody Artist art) {
         service.add(art);
+        return "redirect:/artists";
     }
 
-    @PutMapping("/{id}")
-    public void editArtist(@PathVariable("id") int id, @Valid @RequestBody Artist art) {
+    @PutMapping("/edit")
+    public String editArtist(@RequestParam int id, @Valid @RequestBody Artist art, Model model) {
         service.edit(id, art);
+        model.addAttribute("artist", art);
+        model.addAttribute("artists", service.listAll());
+        return "artist-view";
     }
 
-    @DeleteMapping("/{id}")
-    public void removeArtist(@PathVariable("id") int id) {
+    @DeleteMapping("/remove")
+    public String removeArtist(@RequestParam int id) {
         service.remove(id);
+        return "redirect:/artists";
     }
 }
